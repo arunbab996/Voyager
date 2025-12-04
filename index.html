@@ -176,4 +176,91 @@
     <div class="overlay"></div>
 
     <div class="content">
-      <div class="logo"
+      <div class="logo">Voyager</div>
+
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>Join the Voyager Waitlist</span>
+      </div>
+
+      <h1 class="heading">Voyager</h1>
+      <p class="tagline">Your AI Travel Concierge</p>
+
+      <form
+        id="waitlistForm"
+        class="waitlist"
+        action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+        method="POST"
+      >
+        <input
+          type="email"
+          name="email"
+          required
+          class="input"
+          placeholder="Enter your email to join the waitlist"
+        />
+        <button type="submit" class="btn">Join Waitlist</button>
+      </form>
+
+      <div class="footnote">
+        No spam. Only early access invites.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const videoEl = document.getElementById("bgVideo");
+
+    const videos = [
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4",
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4",
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city3_ckqbri.mp4",
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4"
+    ];
+
+    let currentIndex = 0;
+    const fadeDuration = 600;   // ms
+    const switchInterval = 7000; // ms
+
+    function setVideo(index) {
+      // fade out
+      videoEl.style.opacity = 0;
+
+      // after fade, swap source
+      setTimeout(() => {
+        videoEl.src = videos[index];
+        videoEl.load();
+      }, fadeDuration);
+    }
+
+    videoEl.addEventListener("loadeddata", () => {
+      const playPromise = videoEl.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => console.log("Play failed:", err));
+      }
+
+      // fade back in once data is ready
+      requestAnimationFrame(() => {
+        videoEl.style.opacity = 1;
+      });
+    });
+
+    // Start with first video
+    videoEl.src = videos[currentIndex];
+    videoEl.load();
+
+    // Rotate videos
+    setInterval(() => {
+      currentIndex = (currentIndex + 1) % videos.length;
+      setVideo(currentIndex);
+    }, switchInterval);
+
+    // Waitlist UX
+    document.getElementById("waitlistForm").addEventListener("submit", () => {
+      const btn = document.querySelector("button");
+      btn.textContent = "Joining…";
+      btn.disabled = true;
+    });
+  </script>
+</body>
+</html>
