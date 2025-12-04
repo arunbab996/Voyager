@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Voyager – Your AI Travel Concierge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      color: #ffffff;
+      background: #000;
+    }
+    .page { position: relative; width: 100%; height: 100vh; }
+
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      background: #000;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(0,0,0,0.25), rgba(0,0,0,0.85));
+      z-index: -1;
+    }
+
+    .content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .logo {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      font-size: 15px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0.88;
+      font-weight: 500;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.22);
+      font-size: 12px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(14px);
+    }
+    .pill-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #32e36a;
+      box-shadow: 0 0 8px #32e36a;
+    }
+
+    .heading {
+      font-size: clamp(36px, 7vw, 62px);
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-size: clamp(18px, 2.4vw, 26px);
+      opacity: 0.88;
+      font-weight: 350;
+      max-width: 620px;
+      margin: 0 auto 28px;
+    }
+
+    .waitlist {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .input {
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.44);
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      min-width: min(300px, 80vw);
+      font-size: 14px;
+      outline: none;
+    }
+    .input::placeholder { color: rgba(235,235,235,0.75); }
+
+    .btn {
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ffffff, #7e5dff);
+      color: #060414;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+      box-shadow: 0 22px 52px rgba(0,0,0,0.85);
+    }
+
+    .footnote {
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: 0.66;
+    }
+
+    @media (max-width: 600px) {
+      .logo { top: 16px; left: 16px; font-size: 12px; }
+      .pill { font-size: 11px; padding: 5px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- BG video -->
+    <video id="bgVideo" class="bg-video" autoplay muted playsinline></video>
+    <div class="overlay"></div>
+
+    <div class="content">
+      <div class="logo">Voyager</div>
+
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>Join the Voyager Waitlist</span>
+      </div>
+
+      <h1 class="heading">Voyager</h1>
+      <p class="tagline">Your AI Travel Concierge</p>
+
+      <form
+        id="waitlistForm"
+        class="waitlist"
+        action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+        method="POST"
+      >
+        <input
+          type="email"
+          name="email"
+          required
+          class="input"
+          placeholder="Enter your email to join the waitlist"
+        />
+        <button type="submit" class="btn">Join Waitlist</button>
+      </form>
+
+      <div class="footnote">
+        No spam. Only early access invites.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Add or remove clips here
+    const videos = [
+      "videos/city1.mp4",
+      "videos/city2.mp4",
+      "videos/city3.mp4",
+      "videos/city4.mp4"
+    ];
+
+    const videoEl = document.getElementById("bgVideo");
+    let current = 0;
+
+    function playCurrent() {
+      videoEl.src = videos[current];
+      videoEl.play().catch(() => {});
+    }
+
+    videoEl.addEventListener("ended", () => {
+      current = (current + 1) % videos.length;
+      playCurrent();
+    });
+
+    playCurrent();
+
+    document.getElementById("waitlistForm").addEventListener("submit", () => {
+      const btn = document.querySelector("button");
+      btn.textContent = "Joining…";
+      btn.disabled = true;
+    });
+  </script>
+</body>
+</html>
