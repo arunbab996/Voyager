@@ -32,10 +32,11 @@
       background: #000;
     }
 
+    /* Make overlay lighter so we can clearly see video */
     .overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(0,0,0,0.25), rgba(0,0,0,0.85));
+      background: radial-gradient(circle at top, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
       z-index: -1;
       pointer-events: none;
     }
@@ -69,7 +70,7 @@
       gap: 8px;
       padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.52);
+      background: rgba(0,0,0,0.5);
       border: 1px solid rgba(255,255,255,0.22);
       font-size: 12px;
       margin-bottom: 14px;
@@ -93,7 +94,7 @@
 
     .tagline {
       font-size: clamp(18px, 2.6vw, 28px);
-      opacity: 0.88;
+      opacity: 0.9;
       font-weight: 350;
       max-width: 620px;
       margin: 0 auto 28px;
@@ -145,7 +146,7 @@
     .footnote {
       margin-top: 10px;
       font-size: 12px;
-      opacity: 0.66;
+      opacity: 0.7;
     }
 
     @media (max-width: 600px) {
@@ -160,7 +161,7 @@
 
 <body>
   <div class="page">
-    <!-- Background video: single source, simplest possible -->
+    <!-- Background video -->
     <video
       id="bgVideo"
       class="bg-video"
@@ -213,15 +214,27 @@
   <script>
     const videoEl = document.getElementById("bgVideo");
 
-    // Log what’s happening with the video
     videoEl.addEventListener("loadeddata", () => {
-      console.log("Video loaded successfully");
+      console.log("Video loaded, attempting to play. ReadyState:", videoEl.readyState, "paused:", videoEl.paused);
+
+      const playPromise = videoEl.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log("Playback started. CurrentTime:", videoEl.currentTime);
+          })
+          .catch((err) => {
+            console.log("Playback failed:", err);
+          });
+      }
     });
 
-    videoEl.addEventListener("error", () => {
-      console.log("Video error:", videoEl.error && videoEl.error.code);
-      // Visual debug: tint background red so you know it errored
-      document.body.style.backgroundColor = "#220000";
+    videoEl.addEventListener("play", () => {
+      console.log("Video is playing. CurrentTime:", videoEl.currentTime);
+    });
+
+    videoEl.addEventListener("pause", () => {
+      console.log("Video is paused. CurrentTime:", videoEl.currentTime);
     });
 
     document.getElementById("waitlistForm").addEventListener("submit", () => {
