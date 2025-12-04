@@ -160,8 +160,18 @@
 
 <body>
   <div class="page">
-    <!-- Background video -->
-    <video id="bgVideo" class="bg-video" autoplay muted playsinline></video>
+    <!-- Background video (single source, no JS) -->
+    <video
+      class="bg-video"
+      autoplay
+      muted
+      playsinline
+      loop
+    >
+      <source src="https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4" type="video/mp4" />
+      <!-- If the video fails, this will just show a black background -->
+    </video>
+
     <div class="overlay"></div>
 
     <!-- Centered content -->
@@ -199,30 +209,7 @@
   </div>
 
   <script>
-    const videos = [
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4",
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4",
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city3_ckqbri.mp4",
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4"
-    ];
-
-    const videoEl = document.getElementById("bgVideo");
-    let current = 0;
-
-    function playCurrent() {
-      videoEl.src = videos[current];
-      videoEl.play().catch((err) => {
-        console.warn("Autoplay blocked:", err);
-      });
-    }
-
-    videoEl.addEventListener("ended", () => {
-      current = (current + 1) % videos.length;
-      playCurrent();
-    });
-
-    playCurrent();
-
+    // Just form UX, no video logic
     document.getElementById("waitlistForm").addEventListener("submit", () => {
       const btn = document.querySelector("button");
       btn.textContent = "Joining…";
