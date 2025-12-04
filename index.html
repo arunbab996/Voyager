@@ -21,7 +21,7 @@
       overflow: hidden;
       background: #000;
       color: #fff;
-      font-family: 'Recoleta', serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     }
 
     .page {
@@ -40,7 +40,6 @@
       opacity: 0;
       transition: opacity 580ms ease;
       filter: brightness(1.14) contrast(1.06);
-      z-index: 0;
     }
 
     .overlay {
@@ -48,7 +47,6 @@
       inset: 0;
       background: rgba(0,0,0,0.38);
       pointer-events: none;
-      z-index: 1;
     }
 
     .content {
@@ -66,18 +64,7 @@
       text-align: center;
     }
 
-    .logo {
-      position: absolute;
-      top: 32px;
-      left: 32px;
-      font-size: 19px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      font-weight: 700;
-      opacity: 0.9;
-      z-index: 4;
-    }
-
+    /* glass */
     .glass {
       background: rgba(255, 255, 255, 0.045);
       backdrop-filter: blur(30px) saturate(160%);
@@ -95,7 +82,6 @@
       max-width: 520px;
       width: min(520px, 92vw);
       animation: glassFadeIn 0.55s ease;
-      z-index: 4;
     }
 
     @keyframes glassFadeIn {
@@ -103,6 +89,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* small pill */
     .pill {
       display: inline-flex;
       align-items: center;
@@ -123,13 +110,16 @@
       box-shadow: 0 0 8px #32e36a;
     }
 
+    /* HEADLINE uses Recoleta */
     .heading {
+      font-family: 'Recoleta', serif;
       font-size: clamp(40px, 7vw, 64px);
       font-weight: 700;
       letter-spacing: -0.04em;
       text-shadow: 0 4px 16px rgba(0,0,0,0.55);
     }
 
+    /* tagline + other text revert */
     .tagline {
       font-size: clamp(20px, 2.4vw, 28px);
       opacity: 0.9;
@@ -154,7 +144,7 @@
       font-size: 14px;
       outline: none;
       backdrop-filter: blur(12px);
-      font-family: 'Recoleta', serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     }
 
     .input::placeholder { color: rgba(235,235,235,0.75); }
@@ -164,14 +154,14 @@
       border-radius: 999px;
       border: none;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       background: linear-gradient(135deg, #ffffff, #7e5dff);
       color: #060414;
       box-shadow: 0 16px 40px rgba(0,0,0,0.7);
       transition: 0.18s ease;
       white-space: nowrap;
-      font-family: 'Recoleta', serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     }
 
     .btn:hover {
@@ -186,6 +176,7 @@
       opacity: 0.72;
     }
 
+    /* City caption */
     .city-label {
       position: fixed;
       bottom: 28px;
@@ -202,6 +193,7 @@
       pointer-events: none;
     }
 
+    /* audio toggle */
     .audio-toggle {
       position: fixed;
       bottom: 28px;
@@ -214,7 +206,7 @@
       padding: 8px 14px;
       backdrop-filter: blur(12px);
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 600;
       transition: background 250ms ease;
     }
 
@@ -223,7 +215,6 @@
     }
 
     @media (max-width: 600px) {
-      .logo { top: 20px; left: 20px; font-size: 14px; }
       .glass { padding: 26px 20px; }
       .audio-toggle, .city-label { bottom: 16px; font-size: 11px; }
     }
@@ -242,8 +233,6 @@
     <div id="audioToggle" class="audio-toggle">Enable Sound 🔊</div>
 
     <div class="content">
-      <div class="logo">Voyager</div>
-
       <div class="glass">
         <div class="pill">
           <span class="pill-dot"></span>
@@ -284,31 +273,30 @@
 
     const A = document.getElementById("bgVideoA");
     const B = document.getElementById("bgVideoB");
-    const caption = document.getElementById("cityLabel");
+    const cap = document.getElementById("cityLabel");
     const audioToggle = document.getElementById("audioToggle");
 
     let active = A, idle = B, idx = 0;
-    const switchInterval = 10000;
+    const interval = 10000;
     const fade = 580;
 
     function setSrc(v, s){ v.src=s; v.load(); }
-
-    function setCaption(txt){
-      caption.style.opacity=0;
-      setTimeout(()=>{ caption.textContent=txt; caption.style.opacity=1; }, fade*0.6);
+    function setCap(txt){
+      cap.style.opacity=0;
+      setTimeout(()=>{ cap.textContent=txt; cap.style.opacity=1; }, fade*0.6);
     }
 
-    function swap(){
-      const next=(idx+1)%videos.length;
-      setSrc(idle, videos[next].src);
+    function next(){
+      const n=(idx+1)%videos.length;
+      setSrc(idle, videos[n].src);
 
       idle.addEventListener("loadeddata",()=>{
         idle.play().catch(()=>{});
         active.style.opacity=0;
         idle.style.opacity=1;
-        setCaption(videos[next].caption);
+        setCap(videos[n].caption);
         [active, idle]=[idle, active];
-        idx=next;
+        idx=n;
       },{once:true});
     }
 
@@ -316,11 +304,11 @@
     setSrc(active, videos[idx].src);
     active.addEventListener("loadeddata",()=>{
       active.play().catch(()=>{});
-      setCaption(videos[idx].caption);
+      setCap(videos[idx].caption);
     });
 
     setSrc(idle, videos[(idx+1)%videos.length].src);
-    setInterval(swap, switchInterval);
+    setInterval(next, interval);
 
     let sound=false;
     audioToggle.addEventListener("click",()=>{
