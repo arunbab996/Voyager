@@ -4,16 +4,23 @@
   <meta charset="UTF-8" />
   <title>Voyager – Your AI Travel Concierge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     html, body {
       height: 100%;
-      overflow: hidden;
+      overflow: hidden; /* disable scroll */
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-      color: #ffffff;
+      color: #fff;
       background: #000;
     }
-    .page { position: relative; width: 100%; height: 100vh; }
+
+    .page {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+    }
 
     .bg-video {
       position: fixed;
@@ -24,23 +31,25 @@
       z-index: -2;
       background: #000;
     }
+
     .overlay {
       position: fixed;
       inset: 0;
       background: radial-gradient(circle at top, rgba(0,0,0,0.25), rgba(0,0,0,0.85));
       z-index: -1;
+      pointer-events: none;
     }
 
     .content {
       position: relative;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      height: 100%;
-      padding: 24px;
       text-align: center;
+      padding: 24px;
     }
 
     .logo {
@@ -50,8 +59,8 @@
       font-size: 15px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      opacity: 0.88;
       font-weight: 500;
+      opacity: 0.88;
     }
 
     .pill {
@@ -60,12 +69,13 @@
       gap: 8px;
       padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.52);
       border: 1px solid rgba(255,255,255,0.22);
       font-size: 12px;
       margin-bottom: 14px;
       backdrop-filter: blur(14px);
     }
+
     .pill-dot {
       width: 9px;
       height: 9px;
@@ -75,14 +85,14 @@
     }
 
     .heading {
-      font-size: clamp(36px, 7vw, 62px);
+      font-size: clamp(38px, 7vw, 64px);
       font-weight: 600;
       letter-spacing: -0.04em;
       margin-bottom: 10px;
     }
 
     .tagline {
-      font-size: clamp(18px, 2.4vw, 26px);
+      font-size: clamp(18px, 2.6vw, 28px);
       opacity: 0.88;
       font-weight: 350;
       max-width: 620px;
@@ -105,8 +115,12 @@
       min-width: min(300px, 80vw);
       font-size: 14px;
       outline: none;
+      backdrop-filter: blur(12px);
     }
-    .input::placeholder { color: rgba(235,235,235,0.75); }
+
+    .input::placeholder {
+      color: rgba(235,235,235,0.75);
+    }
 
     .btn {
       padding: 12px 22px;
@@ -121,6 +135,7 @@
       transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
       white-space: nowrap;
     }
+
     .btn:hover {
       transform: translateY(-1px);
       filter: brightness(1.06);
@@ -134,17 +149,22 @@
     }
 
     @media (max-width: 600px) {
-      .logo { top: 16px; left: 16px; font-size: 12px; }
-      .pill { font-size: 11px; padding: 5px 12px; }
+      .logo {
+        top: 16px;
+        left: 16px;
+        font-size: 12px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="page">
-    <!-- BG video -->
+    <!-- Background video -->
     <video id="bgVideo" class="bg-video" autoplay muted playsinline></video>
     <div class="overlay"></div>
 
+    <!-- Centered content -->
     <div class="content">
       <div class="logo">Voyager</div>
 
@@ -179,12 +199,11 @@
   </div>
 
   <script>
-    // Add or remove clips here
     const videos = [
-      "videos/city1.mp4",
-      "videos/city2.mp4",
-      "videos/city3.mp4",
-      "videos/city4.mp4"
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4",
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4",
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city3_ckqbri.mp4",
+      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4"
     ];
 
     const videoEl = document.getElementById("bgVideo");
@@ -192,7 +211,9 @@
 
     function playCurrent() {
       videoEl.src = videos[current];
-      videoEl.play().catch(() => {});
+      videoEl.play().catch((err) => {
+        console.warn("Autoplay blocked:", err);
+      });
     }
 
     videoEl.addEventListener("ended", () => {
