@@ -56,9 +56,9 @@
       height: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: center;     /* center vertically */
+      justify-content: center;
       align-items: center;
-      padding: 0 24px;             /* no top padding now */
+      padding: 0 24px;
       text-align: center;
     }
 
@@ -106,7 +106,7 @@
       box-shadow: 0 0 8px #32e36a;
     }
 
-    /* Voyager title: Recoleta */
+    /* Voyager heading in Recoleta */
     .heading {
       font-family: 'Recoleta', serif;
       font-size: clamp(40px, 7vw, 64px);
@@ -143,6 +143,7 @@
 
     .input::placeholder { color: rgba(235,235,235,0.75); }
 
+    /* Neon mint button */
     .btn {
       padding: 12px 22px;
       border-radius: 999px;
@@ -150,17 +151,17 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg, #ffffff, #7e5dff);
-      color: #060414;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+      background: #33FFCC;
+      color: #001b12;
+      box-shadow: 0 0 14px rgba(51,255,204,0.45);
       transition: 0.18s ease;
       white-space: nowrap;
     }
 
     .btn:hover {
       transform: translateY(-1px);
-      filter: brightness(1.06);
-      box-shadow: 0 22px 52px rgba(0,0,0,0.85);
+      filter: brightness(1.07);
+      box-shadow: 0 0 24px rgba(51,255,204,0.65);
     }
 
     .footnote {
@@ -185,24 +186,41 @@
       pointer-events: none;
     }
 
+    /* Icon-only audio toggle */
     .audio-toggle {
       position: fixed;
       bottom: 28px;
       left: 32px;
       z-index: 4;
-      font-size: 13px;
+
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 17px;
       background: rgba(0,0,0,0.45);
       border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 20px;
-      padding: 8px 14px;
+      border-radius: 50%;
       backdrop-filter: blur(12px);
       cursor: pointer;
-      font-weight: 600;
-      transition: background 250ms ease;
+      transition: background 250ms ease, box-shadow 250ms ease;
     }
 
     .audio-toggle:hover {
       background: rgba(0,0,0,0.65);
+    }
+
+    .audio-toggle.on {
+      box-shadow: 0 0 14px rgba(51,255,204,0.45);
+      animation: pulse 2.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px rgba(51,255,204,0.4); }
+      50% { box-shadow: 0 0 18px rgba(51,255,204,0.7); }
+      100% { box-shadow: 0 0 10px rgba(51,255,204,0.4); }
     }
 
     @media (max-width: 600px) {
@@ -221,7 +239,7 @@
     <div class="overlay"></div>
 
     <div id="cityLabel" class="city-label"></div>
-    <div id="audioToggle" class="audio-toggle">Enable Sound 🔊</div>
+    <div id="audioToggle" class="audio-toggle">🔇</div>
 
     <div class="content">
       <div class="glass">
@@ -272,47 +290,59 @@
     const interval = 10000;  // 10s
     const fade = 580;
 
-    function setSrc(v, s){ v.src=s; v.load(); }
+    function setSrc(v, s){ v.src = s; v.load(); }
+
     function setCap(txt){
-      cap.style.opacity=0;
-      setTimeout(()=>{ cap.textContent=txt; cap.style.opacity=1; }, fade*0.6);
+      cap.style.opacity = 0;
+      setTimeout(() => {
+        cap.textContent = txt;
+        cap.style.opacity = 1;
+      }, fade * 0.6);
     }
 
     function next(){
-      const n=(idx+1)%videos.length;
+      const n = (idx + 1) % videos.length;
       setSrc(idle, videos[n].src);
 
-      idle.addEventListener("loadeddata",()=>{
+      idle.addEventListener("loadeddata", () => {
         idle.play().catch(()=>{});
-        active.style.opacity=0;
-        idle.style.opacity=1;
+        active.style.opacity = 0;
+        idle.style.opacity = 1;
         setCap(videos[n].caption);
-        [active, idle]=[idle, active];
-        idx=n;
-      },{once:true});
+        [active, idle] = [idle, active];
+        idx = n;
+      }, { once: true });
     }
 
-    active.style.opacity=1;
+    active.style.opacity = 1;
     setSrc(active, videos[idx].src);
-    active.addEventListener("loadeddata",()=>{
+    active.addEventListener("loadeddata", () => {
       active.play().catch(()=>{});
       setCap(videos[idx].caption);
     });
 
-    setSrc(idle, videos[(idx+1)%videos.length].src);
+    setSrc(idle, videos[(idx+1) % videos.length].src);
     setInterval(next, interval);
 
-    let sound=false;
-    audioToggle.addEventListener("click",()=>{
-      sound=!sound;
-      active.muted=idle.muted=!sound;
-      audioToggle.textContent=sound ? "Sound On 🔊" : "Enable Sound 🔊";
-      if(sound) active.play();
+    let sound = false;
+    audioToggle.addEventListener("click", () => {
+      sound = !sound;
+      active.muted = idle.muted = !sound;
+
+      if (sound) {
+        audioToggle.textContent = "🔊";
+        audioToggle.classList.add("on");
+        active.play().catch(()=>{});
+      } else {
+        audioToggle.textContent = "🔇";
+        audioToggle.classList.remove("on");
+      }
     });
 
-    document.getElementById("waitlistForm").addEventListener("submit",()=>{
-      const btn=document.querySelector("button");
-      btn.textContent="Joining…"; btn.disabled=true;
+    document.getElementById("waitlistForm").addEventListener("submit", () => {
+      const btn = document.querySelector("button.btn");
+      btn.textContent = "Joining…";
+      btn.disabled = true;
     });
   </script>
 </body>
