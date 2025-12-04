@@ -10,7 +10,7 @@
 
     html, body {
       height: 100%;
-      overflow: hidden; /* disable scroll */
+      overflow: hidden;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
       color: #fff;
       background: #000;
@@ -160,21 +160,23 @@
 
 <body>
   <div class="page">
-    <!-- Background video (single source, no JS) -->
+    <!-- Background video: single source, simplest possible -->
     <video
+      id="bgVideo"
       class="bg-video"
       autoplay
       muted
       playsinline
       loop
     >
-      <source src="https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4" type="video/mp4" />
-      <!-- If the video fails, this will just show a black background -->
+      <source
+        src="https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4"
+        type="video/mp4"
+      />
     </video>
 
     <div class="overlay"></div>
 
-    <!-- Centered content -->
     <div class="content">
       <div class="logo">Voyager</div>
 
@@ -209,7 +211,19 @@
   </div>
 
   <script>
-    // Just form UX, no video logic
+    const videoEl = document.getElementById("bgVideo");
+
+    // Log what’s happening with the video
+    videoEl.addEventListener("loadeddata", () => {
+      console.log("Video loaded successfully");
+    });
+
+    videoEl.addEventListener("error", () => {
+      console.log("Video error:", videoEl.error && videoEl.error.code);
+      // Visual debug: tint background red so you know it errored
+      document.body.style.backgroundColor = "#220000";
+    });
+
     document.getElementById("waitlistForm").addEventListener("submit", () => {
       const btn = document.querySelector("button");
       btn.textContent = "Joining…";
