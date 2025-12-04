@@ -28,21 +28,21 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: -2;
+      z-index: 0;             /* was -2 */
       background: #000;
     }
 
-    /* Make overlay lighter so we can clearly see video */
     .overlay {
       position: fixed;
       inset: 0;
       background: radial-gradient(circle at top, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
-      z-index: -1;
+      z-index: 1;             /* was -1 */
       pointer-events: none;
     }
 
     .content {
       position: relative;
+      z-index: 2;             /* ensure content is above overlay */
       width: 100%;
       height: 100%;
       display: flex;
@@ -216,7 +216,6 @@
 
     videoEl.addEventListener("loadeddata", () => {
       console.log("Video loaded, attempting to play. ReadyState:", videoEl.readyState, "paused:", videoEl.paused);
-
       const playPromise = videoEl.play();
       if (playPromise !== undefined) {
         playPromise
@@ -231,10 +230,6 @@
 
     videoEl.addEventListener("play", () => {
       console.log("Video is playing. CurrentTime:", videoEl.currentTime);
-    });
-
-    videoEl.addEventListener("pause", () => {
-      console.log("Video is paused. CurrentTime:", videoEl.currentTime);
     });
 
     document.getElementById("waitlistForm").addEventListener("submit", () => {
