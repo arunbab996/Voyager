@@ -28,21 +28,23 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: 0;             /* was -2 */
+      z-index: 0;
       background: #000;
+      opacity: 1;
+      transition: opacity 600ms ease;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
       background: radial-gradient(circle at top, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
-      z-index: 1;             /* was -1 */
+      z-index: 1;
       pointer-events: none;
     }
 
     .content {
       position: relative;
-      z-index: 2;             /* ensure content is above overlay */
+      z-index: 2;
       width: 100%;
       height: 100%;
       display: flex;
@@ -161,7 +163,7 @@
 
 <body>
   <div class="page">
-    <!-- Background video -->
+    <!-- Background video (src set by JS) -->
     <video
       id="bgVideo"
       class="bg-video"
@@ -169,74 +171,9 @@
       muted
       playsinline
       loop
-    >
-      <source
-        src="https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4"
-        type="video/mp4"
-      />
-    </video>
+    ></video>
 
     <div class="overlay"></div>
 
     <div class="content">
-      <div class="logo">Voyager</div>
-
-      <div class="pill">
-        <span class="pill-dot"></span>
-        <span>Join the Voyager Waitlist</span>
-      </div>
-
-      <h1 class="heading">Voyager</h1>
-      <p class="tagline">Your AI Travel Concierge</p>
-
-      <form
-        id="waitlistForm"
-        class="waitlist"
-        action="https://formspree.io/f/YOUR_FORMSPREE_ID"
-        method="POST"
-      >
-        <input
-          type="email"
-          name="email"
-          required
-          class="input"
-          placeholder="Enter your email to join the waitlist"
-        />
-        <button type="submit" class="btn">Join Waitlist</button>
-      </form>
-
-      <div class="footnote">
-        No spam. Only early access invites.
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const videoEl = document.getElementById("bgVideo");
-
-    videoEl.addEventListener("loadeddata", () => {
-      console.log("Video loaded, attempting to play. ReadyState:", videoEl.readyState, "paused:", videoEl.paused);
-      const playPromise = videoEl.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log("Playback started. CurrentTime:", videoEl.currentTime);
-          })
-          .catch((err) => {
-            console.log("Playback failed:", err);
-          });
-      }
-    });
-
-    videoEl.addEventListener("play", () => {
-      console.log("Video is playing. CurrentTime:", videoEl.currentTime);
-    });
-
-    document.getElementById("waitlistForm").addEventListener("submit", () => {
-      const btn = document.querySelector("button");
-      btn.textContent = "Joining…";
-      btn.disabled = true;
-    });
-  </script>
-</body>
-</html>
+      <div class="logo"
