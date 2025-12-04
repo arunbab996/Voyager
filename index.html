@@ -30,14 +30,14 @@
       object-fit: cover;
       z-index: 0;
       background: #000;
-      opacity: 1;
+      opacity: 0;
       transition: opacity 600ms ease;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
+      background: rgba(0,0,0,0.40);
       z-index: 1;
       pointer-events: none;
     }
@@ -66,17 +66,32 @@
       opacity: 0.88;
     }
 
+    .glass {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 32px 42px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      max-width: 540px;
+      width: min(540px, 94vw);
+    }
+
     .pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       border: 1px solid rgba(255,255,255,0.22);
       font-size: 12px;
-      margin-bottom: 14px;
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
     }
 
     .pill-dot {
@@ -88,18 +103,19 @@
     }
 
     .heading {
-      font-size: clamp(38px, 7vw, 64px);
+      font-size: clamp(36px, 6.5vw, 60px);
       font-weight: 600;
       letter-spacing: -0.04em;
-      margin-bottom: 10px;
+      margin-bottom: 4px;
+      text-shadow: 0 4px 16px rgba(0,0,0,0.55);
     }
 
     .tagline {
-      font-size: clamp(18px, 2.6vw, 28px);
+      font-size: clamp(18px, 2.4vw, 24px);
       opacity: 0.9;
       font-weight: 350;
-      max-width: 620px;
-      margin: 0 auto 28px;
+      max-width: 420px;
+      margin: 0 auto 4px;
     }
 
     .waitlist {
@@ -107,6 +123,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
+      margin-top: 8px;
     }
 
     .input {
@@ -146,9 +163,9 @@
     }
 
     .footnote {
-      margin-top: 10px;
+      margin-top: 4px;
       font-size: 12px;
-      opacity: 0.7;
+      opacity: 0.72;
     }
 
     @media (max-width: 600px) {
@@ -157,20 +174,31 @@
         left: 16px;
         font-size: 12px;
       }
+
+      .glass {
+        padding: 24px 20px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="page">
-    <!-- Background video (src set by JS) -->
+    <!-- Two background videos for crossfade (no black gaps) -->
     <video
-      id="bgVideo"
+      id="bgVideoA"
       class="bg-video"
       autoplay
       muted
       playsinline
-      loop
+    ></video>
+
+    <video
+      id="bgVideoB"
+      class="bg-video"
+      autoplay
+      muted
+      playsinline
     ></video>
 
     <div class="overlay"></div>
@@ -178,39 +206,39 @@
     <div class="content">
       <div class="logo">Voyager</div>
 
-      <div class="pill">
-        <span class="pill-dot"></span>
-        <span>Join the Voyager Waitlist</span>
-      </div>
+      <div class="glass">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          <span>Join the Voyager Waitlist</span>
+        </div>
 
-      <h1 class="heading">Voyager</h1>
-      <p class="tagline">Your AI Travel Concierge</p>
+        <h1 class="heading">Voyager</h1>
+        <p class="tagline">Your AI Travel Concierge</p>
 
-      <form
-        id="waitlistForm"
-        class="waitlist"
-        action="https://formspree.io/f/YOUR_FORMSPREE_ID"
-        method="POST"
-      >
-        <input
-          type="email"
-          name="email"
-          required
-          class="input"
-          placeholder="Enter your email to join the waitlist"
-        />
-        <button type="submit" class="btn">Join Waitlist</button>
-      </form>
+        <form
+          id="waitlistForm"
+          class="waitlist"
+          action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+          method="POST"
+        >
+          <input
+            type="email"
+            name="email"
+            required
+            class="input"
+            placeholder="Enter your email to join the waitlist"
+          />
+          <button type="submit" class="btn">Join Waitlist</button>
+        </form>
 
-      <div class="footnote">
-        No spam. Only early access invites.
+        <div class="footnote">
+          No spam. Only early access invites.
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    const videoEl = document.getElementById("bgVideo");
-
     const videos = [
       "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4",
       "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4",
@@ -218,42 +246,63 @@
       "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4"
     ];
 
+    const videoA = document.getElementById("bgVideoA");
+    const videoB = document.getElementById("bgVideoB");
+
+    let activeVideo = videoA;
+    let idleVideo = videoB;
     let currentIndex = 0;
+
     const fadeDuration = 600;   // ms
-    const switchInterval = 7000; // ms
+    const switchInterval = 6000; // ms
 
-    function setVideo(index) {
-      // fade out
-      videoEl.style.opacity = 0;
-
-      // after fade, swap source
-      setTimeout(() => {
-        videoEl.src = videos[index];
-        videoEl.load();
-      }, fadeDuration);
+    function setSource(videoEl, src) {
+      videoEl.src = src;
+      videoEl.load();
     }
 
-    videoEl.addEventListener("loadeddata", () => {
-      const playPromise = videoEl.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(err => console.log("Play failed:", err));
-      }
+    function crossfadeToNext() {
+      const nextIndex = (currentIndex + 1) % videos.length;
+      const nextSrc = videos[nextIndex];
 
-      // fade back in once data is ready
-      requestAnimationFrame(() => {
-        videoEl.style.opacity = 1;
-      });
+      // Load next source into idle video
+      setSource(idleVideo, nextSrc);
+
+      idleVideo.addEventListener(
+        "loadeddata",
+        () => {
+          // Start playing idle video
+          const playPromise = idleVideo.play();
+          if (playPromise) playPromise.catch(() => {});
+
+          // Crossfade
+          activeVideo.style.opacity = 0;
+          idleVideo.style.opacity = 1;
+
+          // Swap active/idle references
+          const temp = activeVideo;
+          activeVideo = idleVideo;
+          idleVideo = temp;
+          currentIndex = nextIndex;
+        },
+        { once: true }
+      );
+    }
+
+    // Initial setup
+    activeVideo.style.opacity = 1;
+    setSource(activeVideo, videos[currentIndex]);
+
+    activeVideo.addEventListener("loadeddata", () => {
+      const playPromise = activeVideo.play();
+      if (playPromise) playPromise.catch(() => {});
     });
 
-    // Start with first video
-    videoEl.src = videos[currentIndex];
-    videoEl.load();
+    // Preload first next video into idle
+    setSource(idleVideo, videos[(currentIndex + 1) % videos.length]);
 
-    // Rotate videos
-    setInterval(() => {
-      currentIndex = (currentIndex + 1) % videos.length;
-      setVideo(currentIndex);
-    }, switchInterval);
+    // Rotate
+    setInterval(crossfadeToNext, switchInterval);
 
     // Waitlist UX
     document.getElementById("waitlistForm").addEventListener("submit", () => {
