@@ -16,22 +16,25 @@
       background: #000;
     }
 
+    /* Layout */
     .page {
       position: relative;
       width: 100%;
       height: 100vh;
     }
 
+    /* Video layers for crossfade */
     .bg-video {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: 0;
       background: #000;
       opacity: 0;
-      transition: opacity 600ms ease;
+      transition: opacity 550ms ease;
+      z-index: 0;
+      filter: brightness(1.14) contrast(1.06);
     }
 
     .overlay {
@@ -42,56 +45,70 @@
       pointer-events: none;
     }
 
+    /* Centered block moved upward */
     .content {
       position: relative;
       z-index: 2;
       width: 100%;
       height: 100%;
+      text-align: center;
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 24px;
+      padding-top: 120px;
+      padding-left: 24px;
+      padding-right: 24px;
     }
 
+    /* Logo placeholder — replace later */
     .logo {
       position: absolute;
-      top: 24px;
-      left: 24px;
+      top: 32px;
+      left: 32px;
       font-size: 15px;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.20em;
       text-transform: uppercase;
       font-weight: 500;
       opacity: 0.88;
     }
 
+    /* Liquid glass card */
     .glass {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      background: rgba(255, 255, 255, 0.045);
+      backdrop-filter: blur(30px) saturate(160%);
+      -webkit-backdrop-filter: blur(30px) saturate(160%);
       padding: 32px 42px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.16);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        inset 0 1px 3px rgba(255,255,255,0.18),
+        0 24px 60px rgba(0,0,0,0.55);
       display: flex;
       flex-direction: column;
       gap: 16px;
       align-items: center;
-      max-width: 540px;
-      width: min(540px, 94vw);
+      max-width: 520px;
+      width: min(520px, 92vw);
+      animation: glassFadeIn 0.55s ease;
     }
 
+    @keyframes glassFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0px); }
+    }
+
+    /* Tiny "Join Waitlist" capsule */
     .pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.18);
       font-size: 12px;
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
     }
 
     .pill-dot {
@@ -102,11 +119,11 @@
       box-shadow: 0 0 8px #32e36a;
     }
 
+    /* Typography */
     .heading {
       font-size: clamp(36px, 6.5vw, 60px);
       font-weight: 600;
       letter-spacing: -0.04em;
-      margin-bottom: 4px;
       text-shadow: 0 4px 16px rgba(0,0,0,0.55);
     }
 
@@ -115,15 +132,16 @@
       opacity: 0.9;
       font-weight: 350;
       max-width: 420px;
-      margin: 0 auto 4px;
+      margin: 0 auto 6px;
     }
 
+    /* Inputs */
     .waitlist {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
     .input {
@@ -137,10 +155,7 @@
       outline: none;
       backdrop-filter: blur(12px);
     }
-
-    .input::placeholder {
-      color: rgba(235,235,235,0.75);
-    }
+    .input::placeholder { color: rgba(235,235,235,0.75); }
 
     .btn {
       padding: 12px 22px;
@@ -155,7 +170,6 @@
       transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
       white-space: nowrap;
     }
-
     .btn:hover {
       transform: translateY(-1px);
       filter: brightness(1.06);
@@ -170,13 +184,12 @@
 
     @media (max-width: 600px) {
       .logo {
-        top: 16px;
-        left: 16px;
+        top: 20px;
+        left: 20px;
         font-size: 12px;
       }
-
       .glass {
-        padding: 24px 20px;
+        padding: 26px 20px;
       }
     }
   </style>
@@ -184,7 +197,8 @@
 
 <body>
   <div class="page">
-    <!-- Two background videos for crossfade (no black gaps) -->
+
+    <!-- Two videos for crossfade -->
     <video
       id="bgVideoA"
       class="bg-video"
@@ -204,7 +218,10 @@
     <div class="overlay"></div>
 
     <div class="content">
-      <div class="logo">Voyager</div>
+      <div class="logo">
+        <!-- Temporary text logo; replace later -->
+        VOYAGER
+      </div>
 
       <div class="glass">
         <div class="pill">
@@ -226,7 +243,7 @@
             name="email"
             required
             class="input"
-            placeholder="Enter your email to join the waitlist"
+            placeholder="Enter your email"
           />
           <button type="submit" class="btn">Join Waitlist</button>
         </form>
@@ -253,8 +270,8 @@
     let idleVideo = videoB;
     let currentIndex = 0;
 
-    const fadeDuration = 600;   // ms
-    const switchInterval = 6000; // ms
+    const fadeDuration = 550;
+    const switchInterval = 6000;
 
     function setSource(videoEl, src) {
       videoEl.src = src;
@@ -265,21 +282,17 @@
       const nextIndex = (currentIndex + 1) % videos.length;
       const nextSrc = videos[nextIndex];
 
-      // Load next source into idle video
       setSource(idleVideo, nextSrc);
 
       idleVideo.addEventListener(
         "loadeddata",
         () => {
-          // Start playing idle video
           const playPromise = idleVideo.play();
           if (playPromise) playPromise.catch(() => {});
 
-          // Crossfade
           activeVideo.style.opacity = 0;
           idleVideo.style.opacity = 1;
 
-          // Swap active/idle references
           const temp = activeVideo;
           activeVideo = idleVideo;
           idleVideo = temp;
@@ -289,7 +302,6 @@
       );
     }
 
-    // Initial setup
     activeVideo.style.opacity = 1;
     setSource(activeVideo, videos[currentIndex]);
 
@@ -298,13 +310,10 @@
       if (playPromise) playPromise.catch(() => {});
     });
 
-    // Preload first next video into idle
     setSource(idleVideo, videos[(currentIndex + 1) % videos.length]);
 
-    // Rotate
     setInterval(crossfadeToNext, switchInterval);
 
-    // Waitlist UX
     document.getElementById("waitlistForm").addEventListener("submit", () => {
       const btn = document.querySelector("button");
       btn.textContent = "Joining…";
