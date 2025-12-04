@@ -16,14 +16,12 @@
       background: #000;
     }
 
-    /* Layout */
     .page {
       position: relative;
       width: 100%;
       height: 100vh;
     }
 
-    /* Video layers for crossfade */
     .bg-video {
       position: fixed;
       inset: 0;
@@ -32,23 +30,20 @@
       object-fit: cover;
       background: #000;
       opacity: 0;
-      transition: opacity 550ms ease;
-      z-index: 0;
+      transition: opacity 580ms ease;
       filter: brightness(1.14) contrast(1.06);
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.40);
-      z-index: 1;
+      background: rgba(0,0,0,0.38);
       pointer-events: none;
     }
 
-    /* Centered block moved upward */
     .content {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       width: 100%;
       height: 100%;
       text-align: center;
@@ -56,24 +51,27 @@
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
-      padding-top: 120px;
+
+      /* slightly lifted but centered */
+      padding-top: 90px;
       padding-left: 24px;
       padding-right: 24px;
     }
 
-    /* Logo placeholder — replace later */
+    /* optional placeholder logo text */
     .logo {
       position: absolute;
       top: 32px;
       left: 32px;
       font-size: 15px;
-      letter-spacing: 0.20em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       font-weight: 500;
-      opacity: 0.88;
+      opacity: 0.9;
+      z-index: 4;
     }
 
-    /* Liquid glass card */
+    /* Frosted glass block */
     .glass {
       background: rgba(255, 255, 255, 0.045);
       backdrop-filter: blur(30px) saturate(160%);
@@ -91,14 +89,14 @@
       max-width: 520px;
       width: min(520px, 92vw);
       animation: glassFadeIn 0.55s ease;
+      z-index: 4;
     }
 
     @keyframes glassFadeIn {
       from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Tiny "Join Waitlist" capsule */
     .pill {
       display: inline-flex;
       align-items: center;
@@ -119,7 +117,6 @@
       box-shadow: 0 0 8px #32e36a;
     }
 
-    /* Typography */
     .heading {
       font-size: clamp(36px, 6.5vw, 60px);
       font-weight: 600;
@@ -135,7 +132,6 @@
       margin: 0 auto 6px;
     }
 
-    /* Inputs */
     .waitlist {
       display: flex;
       flex-wrap: wrap;
@@ -182,6 +178,44 @@
       opacity: 0.72;
     }
 
+    /* City caption */
+    .city-label {
+      position: fixed;
+      bottom: 28px;
+      right: 32px;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      opacity: 0.85;
+      z-index: 4;
+      padding: 6px 14px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: opacity 450ms ease;
+      pointer-events: none;
+    }
+
+    /* audio toggle */
+    .audio-toggle {
+      position: fixed;
+      bottom: 28px;
+      left: 32px;
+      z-index: 4;
+      font-size: 13px;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px;
+      padding: 8px 14px;
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      transition: opacity 350ms ease, background 250ms ease;
+    }
+    .audio-toggle:hover {
+      background: rgba(0,0,0,0.65);
+    }
+
     @media (max-width: 600px) {
       .logo {
         top: 20px;
@@ -191,6 +225,11 @@
       .glass {
         padding: 26px 20px;
       }
+      .audio-toggle,
+      .city-label {
+        bottom: 16px;
+        font-size: 11px;
+      }
     }
   </style>
 </head>
@@ -198,30 +237,18 @@
 <body>
   <div class="page">
 
-    <!-- Two videos for crossfade -->
-    <video
-      id="bgVideoA"
-      class="bg-video"
-      autoplay
-      muted
-      playsinline
-    ></video>
-
-    <video
-      id="bgVideoB"
-      class="bg-video"
-      autoplay
-      muted
-      playsinline
-    ></video>
+    <!-- Two layered videos for crossfade -->
+    <video id="bgVideoA" class="bg-video" muted autoplay playsinline></video>
+    <video id="bgVideoB" class="bg-video" muted autoplay playsinline></video>
 
     <div class="overlay"></div>
 
+    <!-- Captions -->
+    <div id="cityLabel" class="city-label"></div>
+    <div id="audioToggle" class="audio-toggle">Enable Sound 🔊</div>
+
     <div class="content">
-      <div class="logo">
-        <!-- Temporary text logo; replace later -->
-        VOYAGER
-      </div>
+      <div class="logo">VOYAGER</div>
 
       <div class="glass">
         <div class="pill">
@@ -248,72 +275,114 @@
           <button type="submit" class="btn">Join Waitlist</button>
         </form>
 
-        <div class="footnote">
-          No spam. Only early access invites.
-        </div>
+        <div class="footnote">No spam. Only early access invites.</div>
       </div>
     </div>
   </div>
 
   <script>
+    /* Video sources + captions */
     const videos = [
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4",
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4",
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city3_ckqbri.mp4",
-      "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4"
+      {
+        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4",
+        caption: "Tokyo, Japan"
+      },
+      {
+        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4",
+        caption: "Venice, Italy"
+      },
+      {
+        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city3_ckqbri.mp4",
+        caption: "Paris, France"
+      },
+      {
+        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4",
+        caption: "Phi-Phi, Thailand"
+      }
     ];
 
     const videoA = document.getElementById("bgVideoA");
     const videoB = document.getElementById("bgVideoB");
+    const cityLabel = document.getElementById("cityLabel");
 
-    let activeVideo = videoA;
-    let idleVideo = videoB;
-    let currentIndex = 0;
+    const audioToggle = document.getElementById("audioToggle");
 
-    const fadeDuration = 550;
-    const switchInterval = 6000;
+    let active = videoA;
+    let idle = videoB;
+    let current = 0;
 
-    function setSource(videoEl, src) {
-      videoEl.src = src;
-      videoEl.load();
+    const fadeDuration = 580;
+    const switchInterval = 10000; // 10s
+
+    function setSource(video, src) {
+      video.src = src;
+      video.load();
     }
 
-    function crossfadeToNext() {
-      const nextIndex = (currentIndex + 1) % videos.length;
-      const nextSrc = videos[nextIndex];
+    function updateCaption(text) {
+      cityLabel.style.opacity = 0;
+      setTimeout(() => {
+        cityLabel.textContent = text;
+        cityLabel.style.opacity = 1;
+      }, fadeDuration * 0.6);
+    }
 
-      setSource(idleVideo, nextSrc);
+    function crossfade() {
+      const nextIndex = (current + 1) % videos.length;
+      const next = videos[nextIndex];
 
-      idleVideo.addEventListener(
+      setSource(idle, next.src);
+
+      idle.addEventListener(
         "loadeddata",
         () => {
-          const playPromise = idleVideo.play();
-          if (playPromise) playPromise.catch(() => {});
+          const p = idle.play();
+          if (p) p.catch(()=>{});
 
-          activeVideo.style.opacity = 0;
-          idleVideo.style.opacity = 1;
+          active.style.opacity = 0;
+          idle.style.opacity = 1;
 
-          const temp = activeVideo;
-          activeVideo = idleVideo;
-          idleVideo = temp;
-          currentIndex = nextIndex;
+          updateCaption(next.caption);
+
+          const temp = active;
+          active = idle;
+          idle = temp;
+          current = nextIndex;
         },
         { once: true }
       );
     }
 
-    activeVideo.style.opacity = 1;
-    setSource(activeVideo, videos[currentIndex]);
-
-    activeVideo.addEventListener("loadeddata", () => {
-      const playPromise = activeVideo.play();
-      if (playPromise) playPromise.catch(() => {});
+    /* initial load */
+    active.style.opacity = 1;
+    setSource(active, videos[current].src);
+    active.addEventListener("loadeddata", () => {
+      const p = active.play();
+      if (p) p.catch(()=>{});
+      updateCaption(videos[current].caption);
     });
 
-    setSource(idleVideo, videos[(currentIndex + 1) % videos.length]);
+    setSource(idle, videos[(current + 1) % videos.length].src);
 
-    setInterval(crossfadeToNext, switchInterval);
+    setInterval(crossfade, switchInterval);
 
+    /* AUDIO: Start muted until user clicks */
+    let audioEnabled = false;
+
+    audioToggle.addEventListener("click", () => {
+      audioEnabled = !audioEnabled;
+      active.muted = !audioEnabled;
+      idle.muted = !audioEnabled;
+
+      if (audioEnabled) {
+        audioToggle.textContent = "Sound On 🔊";
+        active.play();
+      } else {
+        audioToggle.textContent = "Enable Sound 🔊";
+      }
+    });
+
+    /* Waitlist UX */
     document.getElementById("waitlistForm").addEventListener("submit", () => {
       const btn = document.querySelector("button");
       btn.textContent = "Joining…";
