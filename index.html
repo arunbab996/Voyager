@@ -6,14 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
+    /* Recoleta embed */
+    @font-face {
+      font-family: 'Recoleta';
+      src: url('voyager/Recoleta Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
       height: 100%;
       overflow: hidden;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-      color: #fff;
       background: #000;
+      color: #fff;
+      font-family: 'Recoleta', serif;
     }
 
     .page {
@@ -32,6 +40,7 @@
       opacity: 0;
       transition: opacity 580ms ease;
       filter: brightness(1.14) contrast(1.06);
+      z-index: 0;
     }
 
     .overlay {
@@ -39,6 +48,7 @@
       inset: 0;
       background: rgba(0,0,0,0.38);
       pointer-events: none;
+      z-index: 1;
     }
 
     .content {
@@ -46,32 +56,28 @@
       z-index: 3;
       width: 100%;
       height: 100%;
-      text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
-
-      /* slightly lifted but centered */
       padding-top: 90px;
       padding-left: 24px;
       padding-right: 24px;
+      text-align: center;
     }
 
-    /* optional placeholder logo text */
     .logo {
       position: absolute;
       top: 32px;
       left: 32px;
-      font-size: 15px;
-      letter-spacing: 0.18em;
+      font-size: 19px;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      font-weight: 500;
+      font-weight: 700;
       opacity: 0.9;
       z-index: 4;
     }
 
-    /* Frosted glass block */
     .glass {
       background: rgba(255, 255, 255, 0.045);
       backdrop-filter: blur(30px) saturate(160%);
@@ -118,18 +124,16 @@
     }
 
     .heading {
-      font-size: clamp(36px, 6.5vw, 60px);
-      font-weight: 600;
+      font-size: clamp(40px, 7vw, 64px);
+      font-weight: 700;
       letter-spacing: -0.04em;
       text-shadow: 0 4px 16px rgba(0,0,0,0.55);
     }
 
     .tagline {
-      font-size: clamp(18px, 2.4vw, 24px);
+      font-size: clamp(20px, 2.4vw, 28px);
       opacity: 0.9;
-      font-weight: 350;
       max-width: 420px;
-      margin: 0 auto 6px;
     }
 
     .waitlist {
@@ -150,7 +154,9 @@
       font-size: 14px;
       outline: none;
       backdrop-filter: blur(12px);
+      font-family: 'Recoleta', serif;
     }
+
     .input::placeholder { color: rgba(235,235,235,0.75); }
 
     .btn {
@@ -158,14 +164,16 @@
       border-radius: 999px;
       border: none;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 700;
       cursor: pointer;
       background: linear-gradient(135deg, #ffffff, #7e5dff);
       color: #060414;
       box-shadow: 0 16px 40px rgba(0,0,0,0.7);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      transition: 0.18s ease;
       white-space: nowrap;
+      font-family: 'Recoleta', serif;
     }
+
     .btn:hover {
       transform: translateY(-1px);
       filter: brightness(1.06);
@@ -178,13 +186,11 @@
       opacity: 0.72;
     }
 
-    /* City caption */
     .city-label {
       position: fixed;
       bottom: 28px;
       right: 32px;
       font-size: 13px;
-      letter-spacing: 0.03em;
       opacity: 0.85;
       z-index: 4;
       padding: 6px 14px;
@@ -192,12 +198,10 @@
       background: rgba(0,0,0,0.45);
       border: 1px solid rgba(255,255,255,0.18);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       transition: opacity 450ms ease;
       pointer-events: none;
     }
 
-    /* audio toggle */
     .audio-toggle {
       position: fixed;
       bottom: 28px;
@@ -210,26 +214,18 @@
       padding: 8px 14px;
       backdrop-filter: blur(12px);
       cursor: pointer;
-      transition: opacity 350ms ease, background 250ms ease;
+      font-weight: 700;
+      transition: background 250ms ease;
     }
+
     .audio-toggle:hover {
       background: rgba(0,0,0,0.65);
     }
 
     @media (max-width: 600px) {
-      .logo {
-        top: 20px;
-        left: 20px;
-        font-size: 12px;
-      }
-      .glass {
-        padding: 26px 20px;
-      }
-      .audio-toggle,
-      .city-label {
-        bottom: 16px;
-        font-size: 11px;
-      }
+      .logo { top: 20px; left: 20px; font-size: 14px; }
+      .glass { padding: 26px 20px; }
+      .audio-toggle, .city-label { bottom: 16px; font-size: 11px; }
     }
   </style>
 </head>
@@ -237,23 +233,21 @@
 <body>
   <div class="page">
 
-    <!-- Two layered videos for crossfade -->
     <video id="bgVideoA" class="bg-video" muted autoplay playsinline></video>
     <video id="bgVideoB" class="bg-video" muted autoplay playsinline></video>
 
     <div class="overlay"></div>
 
-    <!-- Captions -->
     <div id="cityLabel" class="city-label"></div>
     <div id="audioToggle" class="audio-toggle">Enable Sound 🔊</div>
 
     <div class="content">
-      <div class="logo">VOYAGER</div>
+      <div class="logo">Voyager</div>
 
       <div class="glass">
         <div class="pill">
           <span class="pill-dot"></span>
-          <span>Join the Voyager Waitlist</span>
+          <span>Early Access</span>
         </div>
 
         <h1 class="heading">Voyager</h1>
@@ -281,112 +275,64 @@
   </div>
 
   <script>
-    /* Video sources + captions */
     const videos = [
-      {
-        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4",
-        caption: "Tokyo, Japan"
-      },
-      {
-        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4",
-        caption: "Venice, Italy"
-      },
-      {
-        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city3_ckqbri.mp4",
-        caption: "Paris, France"
-      },
-      {
-        src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4",
-        caption: "Phi-Phi, Thailand"
-      }
+      { src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city1_yapytx.mp4", caption: "Tokyo, Japan" },
+      { src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838930/city2_c4uvvc.mp4", caption: "Venice, Italy" },
+      { src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city3_ckqbri.mp4", caption: "Paris, France" },
+      { src: "https://res.cloudinary.com/dp67k01qy/video/upload/v1764838931/city4_llhhvc.mp4", caption: "Phi-Phi, Thailand" }
     ];
 
-    const videoA = document.getElementById("bgVideoA");
-    const videoB = document.getElementById("bgVideoB");
-    const cityLabel = document.getElementById("cityLabel");
-
+    const A = document.getElementById("bgVideoA");
+    const B = document.getElementById("bgVideoB");
+    const caption = document.getElementById("cityLabel");
     const audioToggle = document.getElementById("audioToggle");
 
-    let active = videoA;
-    let idle = videoB;
-    let current = 0;
+    let active = A, idle = B, idx = 0;
+    const switchInterval = 10000;
+    const fade = 580;
 
-    const fadeDuration = 580;
-    const switchInterval = 10000; // 10s
+    function setSrc(v, s){ v.src=s; v.load(); }
 
-    function setSource(video, src) {
-      video.src = src;
-      video.load();
+    function setCaption(txt){
+      caption.style.opacity=0;
+      setTimeout(()=>{ caption.textContent=txt; caption.style.opacity=1; }, fade*0.6);
     }
 
-    function updateCaption(text) {
-      cityLabel.style.opacity = 0;
-      setTimeout(() => {
-        cityLabel.textContent = text;
-        cityLabel.style.opacity = 1;
-      }, fadeDuration * 0.6);
+    function swap(){
+      const next=(idx+1)%videos.length;
+      setSrc(idle, videos[next].src);
+
+      idle.addEventListener("loadeddata",()=>{
+        idle.play().catch(()=>{});
+        active.style.opacity=0;
+        idle.style.opacity=1;
+        setCaption(videos[next].caption);
+        [active, idle]=[idle, active];
+        idx=next;
+      },{once:true});
     }
 
-    function crossfade() {
-      const nextIndex = (current + 1) % videos.length;
-      const next = videos[nextIndex];
-
-      setSource(idle, next.src);
-
-      idle.addEventListener(
-        "loadeddata",
-        () => {
-          const p = idle.play();
-          if (p) p.catch(()=>{});
-
-          active.style.opacity = 0;
-          idle.style.opacity = 1;
-
-          updateCaption(next.caption);
-
-          const temp = active;
-          active = idle;
-          idle = temp;
-          current = nextIndex;
-        },
-        { once: true }
-      );
-    }
-
-    /* initial load */
-    active.style.opacity = 1;
-    setSource(active, videos[current].src);
-    active.addEventListener("loadeddata", () => {
-      const p = active.play();
-      if (p) p.catch(()=>{});
-      updateCaption(videos[current].caption);
+    active.style.opacity=1;
+    setSrc(active, videos[idx].src);
+    active.addEventListener("loadeddata",()=>{
+      active.play().catch(()=>{});
+      setCaption(videos[idx].caption);
     });
 
-    setSource(idle, videos[(current + 1) % videos.length].src);
+    setSrc(idle, videos[(idx+1)%videos.length].src);
+    setInterval(swap, switchInterval);
 
-    setInterval(crossfade, switchInterval);
-
-    /* AUDIO: Start muted until user clicks */
-    let audioEnabled = false;
-
-    audioToggle.addEventListener("click", () => {
-      audioEnabled = !audioEnabled;
-      active.muted = !audioEnabled;
-      idle.muted = !audioEnabled;
-
-      if (audioEnabled) {
-        audioToggle.textContent = "Sound On 🔊";
-        active.play();
-      } else {
-        audioToggle.textContent = "Enable Sound 🔊";
-      }
+    let sound=false;
+    audioToggle.addEventListener("click",()=>{
+      sound=!sound;
+      active.muted=idle.muted=!sound;
+      audioToggle.textContent=sound ? "Sound On 🔊" : "Enable Sound 🔊";
+      if(sound) active.play();
     });
 
-    /* Waitlist UX */
-    document.getElementById("waitlistForm").addEventListener("submit", () => {
-      const btn = document.querySelector("button");
-      btn.textContent = "Joining…";
-      btn.disabled = true;
+    document.getElementById("waitlistForm").addEventListener("submit",()=>{
+      const btn=document.querySelector("button");
+      btn.textContent="Joining…"; btn.disabled=true;
     });
   </script>
 </body>
